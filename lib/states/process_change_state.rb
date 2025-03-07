@@ -12,10 +12,10 @@ module States
 
     def handle
       calculated_change = context.cashbox.calculate_change(context.product.price, inserted_amount)
-      coins_for_deduction = calculate_coins(calculated_change, inserted_coins)
+      coins_for_deduction = calculate_coins(calculated_change)
 
       if coins_for_deduction
-        process_payment(coins_for_deduction, inserted_coins)
+        process_payment(coins_for_deduction)
       else
         context.can_provide_change = false
         context.user_interface.not_enough_change(inserted_coins)
@@ -24,22 +24,22 @@ module States
 
     private
 
-    def process_payment(coins_for_deduction, inserted_coins)
+    def process_payment(coins_for_deduction)
       context.cashbox.deduct_coins(coins_for_deduction)
 
-      context.user_interface.change_returned(context.product.name, calculate_coins_to_return(coins_for_deduction))
-      transition_to_finish(inserted_coins)
+      change_coins = calculate_coins_to_return(coins_for_deduction)
+      transition_to_finish(change_coins)
     end
 
-    def transition_to_finish(inserted_coins)
-      context.change_state(FinishState.new(context, inserted_coins))
+    def transition_to_finish(change_coins)
+      context.change_state(FinishState.new(context, inserted_coins, change_coins))
     end
 
-    def calculate_coins(amount, inserted_coins)
+    def calculate_coins(amount)
       remaining = amount
       change = {}
 
-      available_coins = build_available_coins(inserted_coins)
+      available_coins = build_available_coins
 
       coin_values = available_coins.keys
 
@@ -62,7 +62,7 @@ module States
       remaining < coin_value || available_coins[coin_value].zero?
     end
 
-    def build_available_coins(inserted_coins)
+    def build_available_coins
       cashbox_coins = context.cashbox.coins
       cashbox_coins.each_with_object(inserted_coins.tally) do |coin, hash|
         hash[coin.value] = coin.quantity
