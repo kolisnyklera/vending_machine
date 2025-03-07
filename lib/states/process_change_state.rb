@@ -15,7 +15,7 @@ module States
       coins_for_deduction = calculate_coins(calculated_change)
 
       if coins_for_deduction
-        process_payment(coins_for_deduction)
+        transition_to_finish(coins_for_deduction)
       else
         context.can_provide_change = false
         context.user_interface.not_enough_change(inserted_coins)
@@ -24,15 +24,8 @@ module States
 
     private
 
-    def process_payment(coins_for_deduction)
-      context.cashbox.deduct_coins(coins_for_deduction)
-
-      change_coins = calculate_coins_to_return(coins_for_deduction)
-      transition_to_finish(change_coins)
-    end
-
-    def transition_to_finish(change_coins)
-      context.change_state(FinishState.new(context, inserted_coins, change_coins))
+    def transition_to_finish(coins_for_deduction)
+      context.change_state(FinishState.new(context, inserted_coins, coins_for_deduction))
     end
 
     def calculate_coins(amount)
@@ -67,10 +60,6 @@ module States
       cashbox_coins.each_with_object(inserted_coins.tally) do |coin, hash|
         hash[coin.value] = coin.quantity
       end
-    end
-
-    def calculate_coins_to_return(coins_for_deduction)
-      coins_for_deduction.flat_map { |value, count| [value] * count }
     end
   end
 end
