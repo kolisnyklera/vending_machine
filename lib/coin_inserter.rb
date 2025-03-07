@@ -2,14 +2,14 @@
 
 class CoinInserter
   attr_reader :cashbox, :user_interface, :product, :inventory
-  attr_accessor :can_provide_change
+  attr_accessor :no_change
 
   def initialize(product:, cashbox:, inventory:, user_interface:)
     @product = product
     @cashbox = cashbox
     @user_interface = user_interface
     @inventory = inventory
-    @can_provide_change = true # default assumption
+    @no_change = false # default assumption
     @state = States::InsertionState.new(self)
   end
 

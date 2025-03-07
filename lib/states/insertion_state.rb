@@ -17,9 +17,7 @@ module States
         inserted_coins << value
         inserted_amount += value
 
-        break if processed_inserted?(inserted_coins, inserted_amount)
-
-        break unless context.can_provide_change # return back to VendingMachine if change cannot be provided
+        break if process_completed?(inserted_coins, inserted_amount)
 
         context.user_interface.inserted_not_enough
       end
@@ -27,10 +25,14 @@ module States
 
     private
 
-    def processed_inserted?(inserted_coins, inserted_amount)
-      return false unless context.cashbox.enough_inserted?(context.product.price, inserted_amount)
+    def process_completed?(inserted_coins, inserted_amount)
+      return false unless enough_coins?(inserted_amount)
 
-      transition_to_payment(inserted_coins, inserted_amount)
+      transition_to_payment(inserted_coins, inserted_amount) || context.no_change
+    end
+
+    def enough_coins?(inserted_amount)
+      context.cashbox.enough_inserted?(context.product.price, inserted_amount)
     end
 
     def transition_to_payment(inserted_coins, inserted_amount)
