@@ -26,7 +26,7 @@ RSpec.describe Cashbox do # rubocop:disable Metrics/BlockLength
       end
     end
 
-    context "when coin value is invalid" do
+    context "when coin value isn't number" do
       it "returns false" do
         expect(cashbox.valid_coin?("hello")).to be false
       end
