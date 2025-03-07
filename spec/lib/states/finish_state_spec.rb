@@ -6,9 +6,9 @@ RSpec.describe States::FinishState do
   let(:product) { inventory.products.first }
   let(:context) { build(:context, cashbox:, inventory:, product:) }
   let(:inserted_coins) { [0.5, 2.0] }
-  let(:change_coins) { nil }
+  let(:coins_for_deduction) { nil }
 
-  subject { described_class.new(context, inserted_coins, change_coins) }
+  subject { described_class.new(context, inserted_coins, coins_for_deduction) }
 
   describe "#handle" do
     it "accepts payment" do
@@ -28,12 +28,12 @@ RSpec.describe States::FinishState do
     end
 
     context "when change_coins are present" do
-      let(:change_coins) { [1.0, 0.5] }
+      let(:coins_for_deduction) { { 3.0 => 1 } }
 
       it "prints message to stdout'" do
         expect do
           subject.handle
-        end.to output("Here is your change: #{change_coins.join(', ')}. Enjoy #{product.name} :)\n").to_stdout
+        end.to output("Here is your change: 3.0. Enjoy #{product.name} :)\n").to_stdout
       end
     end
   end

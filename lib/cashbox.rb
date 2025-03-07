@@ -41,6 +41,10 @@ class Cashbox
     end
   end
 
+  def calculate_change_coins(coins_for_deduction)
+    coins_for_deduction.flat_map { |value, count| [value] * count }
+  end
+
   private
 
   def seed_coins
