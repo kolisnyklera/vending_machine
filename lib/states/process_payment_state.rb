@@ -14,13 +14,8 @@ module States
       if context.cashbox.change_needed?(context.product.price, inserted_amount)
         context.change_state(ProcessChangeState.new(context, inserted_coins, inserted_amount))
       else
-        process_exact_amount(inserted_coins)
+        context.change_state(FinishState.new(context, inserted_coins))
       end
-    end
-
-    def process_exact_amount(inserted_coins)
-      context.user_interface.exact_amount(context.product.name)
-      context.change_state(FinishState.new(context, inserted_coins))
     end
   end
 end

@@ -25,10 +25,6 @@ RSpec.describe States::ProcessPaymentState do
         allow(cashbox).to receive(:change_needed?) { false }
       end
 
-      it "prints message to stdout'" do
-        expect { subject.handle }.to output("You entered the exact amount! Enjoy #{product.name} :)\n").to_stdout
-      end
-
       it "switches state to FinishState" do
         expect(context).to receive(:change_state).with(instance_of(States::FinishState))
 
