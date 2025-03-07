@@ -17,7 +17,7 @@ module States
       if coins_for_deduction
         transition_to_finish(coins_for_deduction)
       else
-        context.can_provide_change = false
+        context.no_change = true
         context.user_interface.not_enough_change(inserted_coins)
       end
     end
